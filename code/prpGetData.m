@@ -3,18 +3,18 @@ function [X_input, y_target] = prpGetData(subject)
     % subject debe ser S01 para el primer sujeto por ejemplo
 
     % carga los datos si ya existen
+    dataFolder = '../dataset/';
 
     if strcmp(subject, '*')
-        fileToLoad = 'all.mat';
+        fileToLoad = strcat(dataFolder, 'all.mat');
     else
-        fileToLoad = strcat(subject, '.mat');
+        fileToLoad = strcat(dataFolder, subject, '.mat');
     end
     if exist(fileToLoad, 'file') == 2
         load(fileToLoad, 'X_input', 'y_target');
     else
-        myFolder = './dataset';
 
-        filePattern = fullfile(myFolder, strcat(subject, '*.jpeg')); 
+        filePattern = fullfile(dataFolder, strcat(subject, '*.jpeg')); 
         theFiles = dir(filePattern);
         l = length(theFiles);
         % Hay 31 targets (alfabeto en ingles mas numeros)
@@ -23,8 +23,8 @@ function [X_input, y_target] = prpGetData(subject)
 
         for k = 1 : length(theFiles)
           baseFileName = theFiles(k).name;
-          fullFileName = fullfile(myFolder, baseFileName);
-          fprintf(1, 'Cargando %s\n', fullFileName);
+          fullFileName = fullfile(dataFolder, baseFileName);
+          fprintf(1, 'Loading %s\n', fullFileName);
           X_input{k} = im2double(imread(fullFileName));
           y_target(str2num(baseFileName(6:7)), k) = 1;
 
