@@ -6,6 +6,53 @@
 \usepackage{hyperref} % for urls
 \usepackage{dirtree}  % for directory trees
 \usepackage{graphicx} % for figures
+\usepackage{tikz}     % for special diagrams   -----------------
+\usetikzlibrary{positioning,calc}
+\tikzset{
+  redondo/.style={
+    draw=black,
+    line width=1pt,
+    rounded corners=3pt,
+    minimum height=1.2em,
+    text width=#1
+  },
+  punto/.style={
+    circle,
+    inner sep=0pt,
+    text width=2.5mm,
+    fill=gray!50!black
+  },
+  tresp/.pic={
+    \node[punto] at (0.25,0) {};
+    \node[punto] at (0.5,0) {};
+    \node[punto] at (0.75,0) {};
+  },
+  trespg/.pic={
+    \node[punto,fill=gray!90!black] at (0.25,0) {};
+    \node[punto,fill=gray!90!black] at (0.5,0) {};
+    \node[punto,fill=gray!90!black] at (0.75,0) {};
+  },
+  dosp/.pic={
+    \node[punto] at (0.25,0) {};
+    \node[punto] at (0.5,0) {};
+  },
+  unop/.pic={
+    \node[punto] at (0.5,0) {};
+  },
+  cuadra/.style={
+    fill=white,
+    line width=0.1pt,
+    minimum size=0.1pt
+  },
+  arr/.style={
+    line width=1pt,
+    draw=gray,
+    ->,
+    >=latex
+  }  
+}
+%------------------------------- end of special diagrams
+
 
 
 \title{A deep learning approach to sign language recognition using stacked 
@@ -198,6 +245,199 @@ form of minimizing loss functions such as the one for the sparse autoencoder,
 overcoming the shorcomings of a traditional conjugate gradient and
 a back-propagation with gradient descents \cite{le2013building}. 
 
+
+\subsection{Deep Learning Architecture}
+
+Two stacked autoencoders are combined with a feedforward neural network in a
+five-layer architecture, as shown in Figure \ref{fig:TrainingArchitecture}. 
+\begin{figure}
+\centering
+\begin{tikzpicture}[node distance=1.5cm and 1.25cm]
+\node[redondo=2cm,label={120:31 neural units}]
+  (upper)
+  {};
+\pic at (upper.west) {dosp};
+\pic at ([xshift=-0.75cm]upper.east) {unop};
+\node[] 
+  at ([xshift=4pt,yshift=-1pt]$ (upper.center) $ ) {$\ldots$};
+
+
+\node[redondo=6.4cm,draw=gray,below=of upper,label={140:100 neural units}]
+  (middleDec)
+  {};
+\pic at (middleDec.west) {trespg};
+\pic at ([xshift=-1.85cm]middleDec) {trespg};
+\pic at ([xshift=-2.58cm]middleDec) {trespg};
+\pic at ([xshift=-1cm]middleDec.east) {trespg};
+\node[] at ([xshift=4pt,yshift=-1pt]middleDec) {$\ldots$};
+
+
+
+\node[redondo=3.3cm,below=of middleDec,label={140:50 neural units}]
+  (middle)
+  {};
+\pic at (middle.west) {tresp};
+\pic at ([xshift=-1.04cm]middle) {dosp};
+\pic at ([xshift=-0.75cm]middle.east) {dosp};
+\node[] at ([xshift=4pt,yshift=-1pt]middle) {$\ldots$};
+
+
+\node[redondo=12cm,draw=gray,below=of middle,label={140:65536 neural units}]
+  (lowerMiddleDec)
+  {};
+\pic at (lowerMiddleDec.west) {trespg};
+\pic at ([xshift=-5.38cm]lowerMiddleDec) {trespg};
+\pic at ([xshift=-4.65cm]lowerMiddleDec) {trespg};
+\pic at ([xshift=-3.92cm]lowerMiddleDec) {trespg};
+\pic at ([xshift=-3.19cm]lowerMiddleDec) {trespg};
+\pic at ([xshift=-2.46cm]lowerMiddleDec) {trespg};
+\pic at ([xshift=-1.73cm]lowerMiddleDec) {trespg};
+\pic at ([xshift=-1.75cm]lowerMiddleDec.east) {trespg};
+\pic at ([xshift=-1.00cm]lowerMiddleDec.east) {trespg};
+\node[] at ([xshift=4pt,yshift=-1pt]lowerMiddleDec) {$\ldots$};
+
+
+\node[redondo=6.4cm,below=of lowerMiddleDec,label={140:100 neural units}]
+  (lowermiddle)
+  {};
+\pic at (lowermiddle.west) {tresp};
+\pic at ([xshift=-1.85cm]lowermiddle) {tresp};
+\pic at ([xshift=-2.58cm]lowermiddle) {tresp};
+\pic at ([xshift=-1cm]lowermiddle.east) {tresp};
+\node[cuadra,below=of lowermiddle,label={right:{training images}}] (cuadramiddle)
+{\includegraphics[width=.075\textwidth]{img/S01num1.eps} 
+\includegraphics[width=.075\textwidth]{img/S01num2.eps}
+$\cdots$ \includegraphics[width=.075\textwidth]{img/S01num31.eps}};
+
+\node[] at ([xshift=4pt,yshift=-1pt]lowermiddle) {$\ldots$};
+
+\draw[arr,draw=black] (cuadramiddle) to (lowermiddle);
+\draw[arr,<->] (lowermiddle) to (lowerMiddleDec) ;
+\draw[arr,<->] (middle) to (middleDec);
+\draw[arr,draw=black] 
+  (upper) -- 
+  ++(0pt,1cm) node[above] {predicted class};
+\draw[arr,dashed,draw=black] 
+  (lowermiddle) to[out=45,in=315] (middle);
+\draw[arr,dashed,draw=black] 
+  (middle) to[out=45,in=315] (upper);
+
+
+\node[anchor=north west,align=left] 
+  at (upper) {\hspace{0.7in} neural network layer}; 
+\node[anchor=north west,align=left] 
+  at (middleDec) {\\ \hspace{0.7in} decoding layer}; 
+\node[anchor=north west,align=left] 
+  at (middle) {\hspace{0.7in} encoding layer}; 
+\node[anchor=north west,align=left] 
+  at (lowerMiddleDec) {\\ \hspace{0.7in} decoding layer}; 
+\node[anchor=north west,align=left] 
+  at (lowermiddle) {\\ \hspace{0.7in} encoding layer}; 
+\end{tikzpicture}
+\caption{Deep architecture during training. The training begins with the first
+two layers, encoder - decoder, and once the training is complete feature are
+encoded and propagated to the third layer in order to further
+encode - decode high-level features. Finally, the last neural layer retrieves
+the encoded features from the third layer and learns the target class. The
+training is performed using SCG descent \cite{le2013building}.}
+\label{fig:TrainingArchitecture}
+\end{figure}
+The first two layers are a set of unsupervised autoencoders that minimize the
+loss function in (\ref{eq:loss}). The first layer, i.e., an encoding layer,
+receives as input $N$ images of $256\times 256$ as row vectors, each denoted as 
+$\mathbf{x}_n \in \mathbb{R}^{65536}$, where $n \in \{1,2, \dots, N\}$. The
+training phase encodes the attibutes using 100 neural units to produce
+$\mathbf{\hat{x}}_n \in \mathbb{R}^{100}$, and decodes back to
+the feature space using, intuitively, 65536 neural units; all neural units use
+logistic activation functions. 
+
+Similarly, the third and fourth layers are an encoder and decoder,
+respectively. The encoder in the third layer receives as input an encoded
+version of the input coming from the first layer, denoted as
+$\mathbf{\hat{x}}_n$, and encodes using 50 neural units producing a modified
+version of the feature vector denoted as 
+$\mathbf{\tilde{x}}_i \in \mathbb{R}^{50}$. 
+The decoder in the fourth layer decodes using 100 neural units. 
+
+In the last layer of the model we use a network of 31 neural units with softmax
+activation functions. Each neuron is estimulated $\mathbf{\tilde{x}}_n$ and is
+trained to predict the probability of the $n$-th sample belonging to a specific
+class $C \in \{1, 2, \dots, 31\}$. The output of this layer for the $n$-th
+sample is the estimated probability of that sample belonging to all classes, 
+formally denoted as $\mathbf{\hat{d}}_n \in \mathbb{R}^{31}$. The layer is trained to minimize
+the cross entropy function \cite{szegedy2016rethinking} given by:
+\begin{align}
+E=\frac{1}{N} \sum_{n=1}^N \sum_{c \in C} \hat{d}_{cn} \ln d_{cn} + (1 -
+\hat{d}_{cn}) \ln (1 - d_{cn}) 
+\label{eq:entropy}
+\end{align}
+where $\mathbf{d}_n \in \mathbb{R}^{31}$ is the true probability of the $n$-th
+sample belonging to a specific class. 
+
+Once the process of training the autoencoders and the softmax layer, the
+network undergoes a last refined training phase. In this last process, only the
+first, third, and fifth layers are fully connected and trained simmulating a
+feed-forward neural network, as shown in Figure \ref{fig:finalArchitecture}. 
+\begin{figure}
+\centering
+\begin{tikzpicture}[node distance=1.5cm and 1.25cm]
+\node[redondo=2cm,label={120:\emph{softmax} activations}]
+  (upper)
+  {};
+\pic at (upper.west) {dosp};
+\pic at ([xshift=-0.75cm]upper.east) {unop};
+\node[] 
+  at ([xshift=4pt,yshift=-1pt]$ (upper.center) $ ) {$\ldots$};
+
+\node[redondo=3.3cm,below=of upper,label={140:\emph{logistic} activations}]
+  (middle)
+  {};
+\pic at (middle.west) {tresp};
+\pic at ([xshift=-1.04cm]middle) {dosp};
+\pic at ([xshift=-0.75cm]middle.east) {dosp};
+\node[] at ([xshift=4pt,yshift=-1pt]middle) {$\ldots$};
+
+\node[redondo=6.4cm,below=of
+middle,label={140:\emph{logistic} activations}]
+  (lowermiddle)
+  {};
+\pic at (lowermiddle.west) {tresp};
+\pic at ([xshift=-1.85cm]lowermiddle) {tresp};
+\pic at ([xshift=-2.58cm]lowermiddle) {tresp};
+\pic at ([xshift=-1cm]lowermiddle.east) {tresp};
+\node[cuadra,below=of lowermiddle,label={right:{input image}}] (cuadramiddle)
+{\includegraphics[width=.075\textwidth]{img/S01num3.eps}};
+
+\node[] at ([xshift=4pt,yshift=-1pt]lowermiddle) {$\ldots$};
+
+\draw[arr] (cuadramiddle) -- ++(0pt,1.5cm) node[above] {$\mathbf{x}_{n} \in \mathbb{N}_+^{65536}$};
+\draw[arr] (lowermiddle) -- ++(0pt,1cm) node[above] {$\mathbf{\hat{x}}_n \in \mathbb{R}_+^{100}$};
+\draw[arr] (middle) -- ++(0pt,1cm) node[above] {$\mathbf{\tilde{x}}_n \in \mathbb{R}_+^{50}$};
+\draw[arr] 
+  (upper) -- 
+  ++(0pt,1cm) node[above] {output $\mathbf{d}_n \in \mathbb{R}_+^{31}$};
+\node[anchor=north west,align=left] 
+  at (upper) {\hspace{0.7in} neural network layer}; 
+\node[anchor=north west,align=left] 
+  at (middle) {\hspace{0.7in} sparse encoding layer}; 
+\node[anchor=north west,align=left] 
+  at (lowermiddle) {\\ \hspace{0.7in} sparse encoding layer}; 
+\end{tikzpicture}
+\caption{The working architecture when testing the system. The input is any
+test image which is passed through the first sparse encoder in the stack,
+reducing the dimensionality of the problem to 100. In the second sparse encoder
+the feature space is further reduced to 50. The output are probabilistic
+outputs corresponding to each of the 31 classes.}
+\label{fig:finalArchitecture}
+\end{figure}
+The initial weights are those obtained during the
+encoding-decoding learning phase and fine tuned using SCG descent to minimize
+the cross entropy in (\ref{eq:entropy}).
+
+
+\section{Experiments}
+\subsection{Setup}
+\subsection{Results and Discussion}
 
 \bibliographystyle{splncs03} 
 \bibliography{ref}
