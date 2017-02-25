@@ -1,3 +1,28 @@
+\begin{filecontents*}{bardata.dat}
+  y   x1 x2 x3 x4 x5 x6 x7  z1 z2 z3 z4 z5 z6 z7
+  H   1  0  0  0  0  0  0   2/V {} {} {} {} {} {}
+  B   1  0  0  0  0  0  0   6/W {} {} {} {} {} {}
+  5   1  0  0  0  0  0  0   6/W {} {} {} {} {} {}
+  4   1  0  0  0  0  0  0   6/W {} {} {} {} {} {}
+  X   1  1  0  0  0  0  0   O  B  {} {} {} {} {}
+  3   1  1  0  0  0  0  0   9  S  {} {} {} {} {}
+  1   1  1  0  0  0  0  0   X  R  {} {} {} {} {}
+  G   2  0  0  0  0  0  0   H  {} {} {} {} {} {}
+  I   2  1  0  0  0  0  0   E  S  {} {} {} {} {}
+  F   2  1  0  0  0  0  0   B  I  {} {} {} {} {}
+  7   2  1  0  0  0  0  0   P  4  {} {} {} {} {}
+  S   2  1  1  0  0  0  0   M  A  T  {} {} {} {}
+  K   2  2  0  0  0  0  0   U  1  {} {} {} {} {}
+  R   3  1  0  0  0  0  0   U  9  {} {} {} {} {}
+  O   5  1  1  0  0  0  0   E  3  C  {} {} {} {}
+  6/W 6  1  0  0  0  0  0   7  3  {} {} {} {} {}
+  A   3  3  2  1  1  0  0   E  N  M  P  T  {} {}
+  N   5  2  2  1  1  0  0   M  A  H  T  Y  {} {}
+  M   8  3  2  1  0  0  0   N  T  A  S  {} {} {}
+  T   8  6  1  1  0  0  0   A  S  E  N  {} {} {}
+  E   5  4  3  2  1  1  1   S  M  T  H  A  O  P
+\end{filecontents*}
+
 \documentclass[a4paper]{article}
 \usepackage[letterpaper, margin=1in]{geometry} % page format
 \usepackage{listings} % this package is for including code
@@ -52,7 +77,12 @@
   }  
 }
 %------------------------------- end of special diagrams
-
+\usepackage{pgfplots} % for bar plots -------------------------
+\pgfplotsset{
+  % use this `compat' level or higher to use the advanced positioning
+  % features of `nodes near coords' in stacked bar plots
+  compat=1.9,
+}
 
 
 \title{A deep learning approach to sign language recognition using stacked 
@@ -438,6 +468,87 @@ the cross entropy in (\ref{eq:entropy}).
 \section{Experiments}
 \subsection{Setup}
 \subsection{Results and Discussion}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+  \begin{axis}[
+    width=12.2cm,
+    height=10.0cm,
+    axis y line*=none,
+    axis x line*=bottom,
+    xbar stacked,
+    bar width=10pt,
+    xmin=0,
+    % for simplicity use `ytick=data'
+    ytick=data,
+    % use a column of the data table for the ytick labels
+    yticklabels from table={bardata.dat}{y},
+    xlabel={Number of total errors $|$ Bars: incorrectly predicted class},
+    ylabel={Target Class},
+    font=\footnotesize,
+    % we want to show `nodes near coords' ...
+    nodes near coords,
+    % ... with white text color ...
+    nodes near coords style={
+        text=white,
+    },
+    % ... and symbolic values
+    point meta=explicit symbolic,
+  ]
+  % cycle through the columns of the data file
+  % (indices are starting from 0)
+  \foreach \i in {1,...,7} {
+    % store the column number containing the `meta' data
+    \pgfmathtruncatemacro{\MetaColNo}{7+\i}
+    % draw the plot ...
+    \addplot [
+        fill=gray!50!black,
+        draw=white,
+        font=\scriptsize,
+    ] table [
+      % ... using the column index `\i' as x value, ...
+      x index=\i,
+      % ... the `\coordindex' as y value, and ...
+      y expr=\coordindex,
+      % ... the (stored) column number `\MetaColNo' as meta value
+      meta index=\MetaColNo,
+    ] {bardata.dat};
+  }
+  \end{axis}
+\end{tikzpicture}
+\caption{The American Sign Language (ASL) displaying 26 signs corresponding to the
+English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
+\label{fig:errTargPred}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\begin{tabular}{cccc}
+\includegraphics[width=1in]{img/S01num3.eps} & a & b & c
+\end{tabular}
+\caption{The American Sign Language (ASL) displaying 26 signs corresponding to the
+English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
+\label{fig:errors}
+\end{figure}
+
+
+\begin{table}
+\centering
+\caption{Critical $N$ values}
+\begin{tabular}{llllll}
+\hline\noalign{\smallskip}
+${\mathrm M}_\odot$ & $\beta_{0}$ & $T_{\mathrm c6}$ & $\gamma$
+& $N_{\mathrm{crit}}^{\mathrm L}$
+& $N_{\mathrm{crit}}^{\mathrm{Te}}$\\ \noalign{\smallskip}
+\hline
+\noalign{\smallskip}
+30 & 0.82 & 38.4 & 35.7 & 154 & 320 \\
+60 & 0.67 & 42.1 & 34.7 & 138 & 340 \\ 120 & 0.52 & 45.1 & 34.0 & 124 & 370 \\ \hline
+\end{tabular}
+\end{table}
+
 
 \bibliographystyle{splncs03} 
 \bibliography{ref}
