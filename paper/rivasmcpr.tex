@@ -1,28 +1,3 @@
-\begin{filecontents*}{bardata.dat}
-  y   x1 x2 x3 x4 x5 x6 x7  z1 z2 z3 z4 z5 z6 z7
-  H   1  0  0  0  0  0  0   2/V {} {} {} {} {} {}
-  B   1  0  0  0  0  0  0   6/W {} {} {} {} {} {}
-  5   1  0  0  0  0  0  0   6/W {} {} {} {} {} {}
-  4   1  0  0  0  0  0  0   6/W {} {} {} {} {} {}
-  X   1  1  0  0  0  0  0   O  B  {} {} {} {} {}
-  3   1  1  0  0  0  0  0   9  S  {} {} {} {} {}
-  1   1  1  0  0  0  0  0   X  R  {} {} {} {} {}
-  G   2  0  0  0  0  0  0   H  {} {} {} {} {} {}
-  I   2  1  0  0  0  0  0   E  S  {} {} {} {} {}
-  F   2  1  0  0  0  0  0   B  I  {} {} {} {} {}
-  7   2  1  0  0  0  0  0   P  4  {} {} {} {} {}
-  S   2  1  1  0  0  0  0   M  A  T  {} {} {} {}
-  K   2  2  0  0  0  0  0   U  1  {} {} {} {} {}
-  R   3  1  0  0  0  0  0   U  9  {} {} {} {} {}
-  O   5  1  1  0  0  0  0   E  3  C  {} {} {} {}
-  6/W 6  1  0  0  0  0  0   7  3  {} {} {} {} {}
-  A   3  3  2  1  1  0  0   E  N  M  P  T  {} {}
-  N   5  2  2  1  1  0  0   M  A  H  T  Y  {} {}
-  M   8  3  2  1  0  0  0   N  T  A  S  {} {} {}
-  T   8  6  1  1  0  0  0   A  S  E  N  {} {} {}
-  E   5  4  3  2  1  1  1   S  M  T  H  A  O  P
-\end{filecontents*}
-
 \documentclass[a4paper]{article}
 \usepackage[letterpaper, margin=1in]{geometry} % page format
 \usepackage{listings} % this package is for including code
@@ -526,7 +501,53 @@ English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
 \begin{figure}
 \centering
 \begin{tabular}{cccc}
-\includegraphics[width=1in]{img/S01num3.eps} & a & b & c
+Target $\mu_c$ & Input & Similar & Predicted $\mu_c$ \\
+
+\includegraphics[width=1cm]{img/S01_C14m_0009.eps} & 
+\includegraphics[width=1cm]{img/S01_C14_0186.eps} & 
+\includegraphics[width=1cm]{img/S01_C28_0015.eps} &  
+\includegraphics[width=1cm]{img/S01_C28m_0100.eps} \\ 
+$c=\text{E}$ & & $c=\text{T}$ \\
+\includegraphics[width=1cm]{img/S01_C22m_0035.eps} & 
+\includegraphics[width=1cm]{img/S01_C22_0139.eps} & 
+\includegraphics[width=1cm]{img/S01_C28_0142.eps} & 
+\includegraphics[width=1cm]{img/S01_C28m_0100.eps} \\ 
+$c=\text{N}$ & & $c=\text{T}$ \\
+\includegraphics[width=1cm]{img/S02_C28m_0052.eps} & 
+\includegraphics[width=1cm]{img/S02_C28_0199.eps} & 
+\includegraphics[width=1cm]{img/S02_C10_0146.eps} & 
+\includegraphics[width=1cm]{img/S02_C10m_0030.eps} \\ 
+$c=\text{T}$ & & $c=\text{A}$ \\
+\includegraphics[width=1cm]{img/S03_C10m_0181.eps} & 
+\includegraphics[width=1cm]{img/S03_C10_0138.eps} & 
+\includegraphics[width=1cm]{img/S03_C24_0055.eps} & 
+\includegraphics[width=1cm]{img/S03_C24m_0088.eps} \\ 
+$c=\text{A}$ & & $c=\text{P}$ \\
+\includegraphics[width=1cm]{img/S01_C18m_0114.eps} & 
+\includegraphics[width=1cm]{img/S01_C18_0051.eps} & 
+\includegraphics[width=1cm]{img/S01_C14_0097.eps} & 
+\includegraphics[width=1cm]{img/S01_C14m_0009.eps} \\ 
+$c=\text{I}$ & & $c=\text{E}$ \\
+\includegraphics[width=1cm]{img/S01_C21m_0001.eps} & 
+\includegraphics[width=1cm]{img/S01_C21_0058.eps} & 
+\includegraphics[width=1cm]{img/S01_C22_0123.eps} & 
+\includegraphics[width=1cm]{img/S01_C22m_0035.eps} \\ 
+$c=\text{M}$ & & $c=\text{N}$ \\
+\includegraphics[width=1cm]{img/S04_C05m_0172.eps} & 
+\includegraphics[width=1cm]{img/S04_C05_0138.eps} & 
+\includegraphics[width=1cm]{img/S04_C06_0073.eps} & 
+\includegraphics[width=1cm]{img/S04_C06m_0080.eps} \\ 
+$c=\text{5}$ & & $c=\text{6/W}$ \\
+\includegraphics[width=1cm]{img/S01_C06m_0167.eps} & 
+\includegraphics[width=1cm]{img/S01_C06_0015.eps} & 
+\includegraphics[width=1cm]{img/S01_C07_0013.eps} & 
+\includegraphics[width=1cm]{img/S01_C07m_0171.eps} \\ 
+$c=\text{6/W}$ & & $c=\text{7}$ \\
+\includegraphics[width=1cm]{img/S01_C04m_0185.eps} & 
+\includegraphics[width=1cm]{img/S01_C04_0118.eps} & 
+\includegraphics[width=1cm]{img/S01_C06_0014.eps} & 
+\includegraphics[width=1cm]{img/S01_C06m_0167.eps} \\ 
+$c=\text{4}$ & & $c=\text{6/W}$ \\
 \end{tabular}
 \caption{The American Sign Language (ASL) displaying 26 signs corresponding to the
 English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
@@ -537,17 +558,56 @@ English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
 \begin{table}
 \centering
 \caption{Critical $N$ values}
-\begin{tabular}{llllll}
+\begin{tabular}{ccccccc}
 \hline\noalign{\smallskip}
-${\mathrm M}_\odot$ & $\beta_{0}$ & $T_{\mathrm c6}$ & $\gamma$
-& $N_{\mathrm{crit}}^{\mathrm L}$
-& $N_{\mathrm{crit}}^{\mathrm{Te}}$\\ \noalign{\smallskip}
+ & S1 & S2 & S3 & S4 & S5 & Avg. \\ \noalign{\smallskip}
 \hline
 \noalign{\smallskip}
-30 & 0.82 & 38.4 & 35.7 & 154 & 320 \\
-60 & 0.67 & 42.1 & 34.7 & 138 & 340 \\ 120 & 0.52 & 45.1 & 34.0 & 124 & 370 \\ \hline
+ACC & 0.9748 & 0.9923 & 0.9935 & 0.9929 & 0.9910 & 0.9889 \\ 
+SPC & 0.9991 & 0.9997 & 0.9998 & 0.9998 & 0.9997 & 0.9996 \\
+MAE & 0.1483 & 0.0640 & 0.0373 & 0.0347 & 0.0494 & 0.0667\\ \hline
 \end{tabular}
 \end{table}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+  \begin{axis} [   
+    width=12.2cm,
+    height=7.0cm,
+    ybar,
+    xlabel=Sign,
+    ylabel=Accuracy,
+    xtick=data,
+    xticklabels from table={classbardata.dat}{Sign},
+    bar width=10pt,
+    x tick label style={font=\footnotesize,align=right,rotate=90},
+    enlarge x limits=0.01,
+    enlarge y limits=0.01,
+    ]
+    \addplot [
+      fill=gray!50!black,
+      draw=white,
+      ] table [
+      x=Position,
+      y=Accuracy
+    ] 
+    {classbardata.dat};
+  \end{axis}
+\end{tikzpicture}
+\caption{The American Sign Language (ASL) displaying 26 signs corresponding to the
+English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
+\label{fig:errPerClass}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=12.2cm]{img/weightsS05.eps}
+\caption{The American Sign Language (ASL) displaying 26 signs corresponding to the
+English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
+\label{fig:asl}
+\end{figure}
 
 
 \bibliographystyle{splncs03} 
