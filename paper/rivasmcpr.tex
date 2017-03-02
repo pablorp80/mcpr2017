@@ -231,6 +231,7 @@ The Kullback-Leibler divergence function can be defined as follows
 \sum^M_{m=1} KL \left( \theta_\alpha \left\| \bar{\alpha}_m \right. \right) = 
 \sum^M_{m=1} \theta_\alpha \log \left( \frac{\theta_\alpha}{\bar{\alpha}_m} \right)
 + (1 - \theta_\alpha) \log \left( \frac{1-\theta_\alpha}{1-\bar{\alpha}_m} \right)
+\label{eq:divergence}
 \end{align}
 where the average output of the $m$-th neuron, $\bar{\alpha}_m$, at the $l$-th
 layer is given by
@@ -442,8 +443,59 @@ the cross entropy in (\ref{eq:entropy}).
 
 \section{Experiments}
 \subsection{Setup}
-\subsection{Results and Discussion}
+The experimental setup was as follows. The dataset was divided in 50\%, 25\%,
+and 25\% for training, testing, and validation respectively. Two autoencoders
+were trained using SCG to minimize the cross entropy previously defined. The
+first autoencoder has 100 neurons and the second one has 50. The second
+autoencoder is trained with the reduced features from the first autoencoders. 
+A softmax neural network is then trained to minimize the mean squared error
+with SCG. 
 
+The process is done once per each subject to match the experiments done by Kang
+et. al. in \cite{kang2015real}. The data was not processed in any other manner
+before being presented to the neural architecture for training nor testing.
+Thus, the inputs are row-vector versions of 8-bit depth images as shown in
+Figure \ref{fig:sampN1}.
+
+
+\subsection{Results and Discussion}
+Performance results on the validation sets are shown in Table
+\ref{tbl:performance}. 
+\begin{table}
+\centering
+\caption{Performance of the deep architecture over the validation sets.}
+\begin{tabular}{ccccccc}
+\hline\noalign{\smallskip}
+ & S1 & S2 & S3 & S4 & S5 & Avg. \\ \noalign{\smallskip}
+\hline
+\noalign{\smallskip}
+ACC & 0.9748 & 0.9923 & 0.9935 & 0.9929 & 0.9910 & 0.9889 \\ 
+SPC & 0.9991 & 0.9997 & 0.9998 & 0.9998 & 0.9997 & 0.9996 \\
+MAE & 0.1483 & 0.0640 & 0.0373 & 0.0347 & 0.0494 & 0.0667\\ \hline
+\end{tabular}
+\label{tbl:performance}
+\end{table}
+The table indicates that the average accuracy was of 98.9\% which is similar
+to the results reported in \cite{kang2015real} of 99.9\%. Although the
+difference is 1\%, it is not
+statistically signifficant. Furthermore, the deep architecture proposed in this
+paper is more efficient than the CNN proposed by the authors. The accuracy
+(ACC) is calculated as $\frac{TP+TN}{TP+FP+TN+FN}$ where $TP$ is the count of
+true positives, $TN$ is the count of true negatives, $FP$ is the count of false
+positives, and $FN$ is the count of false negatives.
+When it comes to specificity (SPC), defined as $\frac{TN}{FP+TN}$, the proposed
+model gives a measure of $0.99$, indicating that the model is very good at
+predicting true negatives. This quality is desired in this type of problems to
+make sure the model is sure what a sign is not. This property could be
+attributed to the minimization of the Kullback-Leibler divergence function
+defined in (\ref{eq:divergence}) that causes the average outputs of the neural
+unitis to be low. Similarly, a low mean absolute error (MAE), defined as
+$\frac{1}{N} \sum_{i=1}^N |d_i - \hat{d}_i|$, is an indicator of low average
+error and low uncertainty in the output of the nerual units. The average MAE
+was of $0.06$ and it was as slow as $0.03$ for some subjects.
+
+Figure \ref{fig:errTargPred} shows all the errors made after training over the
+validation set.
 \begin{figure}
 \centering
 \begin{tikzpicture}
@@ -455,120 +507,106 @@ the cross entropy in (\ref{eq:entropy}).
     xbar stacked,
     bar width=10pt,
     xmin=0,
-    % for simplicity use `ytick=data'
     ytick=data,
-    % use a column of the data table for the ytick labels
     yticklabels from table={bardata.dat}{y},
     xlabel={Number of total errors $|$ Bars: incorrectly predicted class},
     ylabel={Target Class},
     font=\footnotesize,
-    % we want to show `nodes near coords' ...
     nodes near coords,
-    % ... with white text color ...
     nodes near coords style={
         text=white,
     },
-    % ... and symbolic values
     point meta=explicit symbolic,
   ]
-  % cycle through the columns of the data file
-  % (indices are starting from 0)
   \foreach \i in {1,...,7} {
-    % store the column number containing the `meta' data
     \pgfmathtruncatemacro{\MetaColNo}{7+\i}
-    % draw the plot ...
     \addplot [
         fill=gray!50!black,
         draw=white,
         font=\scriptsize,
     ] table [
-      % ... using the column index `\i' as x value, ...
       x index=\i,
-      % ... the `\coordindex' as y value, and ...
       y expr=\coordindex,
-      % ... the (stored) column number `\MetaColNo' as meta value
       meta index=\MetaColNo,
     ] {bardata.dat};
   }
   \end{axis}
 \end{tikzpicture}
-\caption{The American Sign Language (ASL) displaying 26 signs corresponding to the
-English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
+\caption{Stacked bar chart of classification errors. Every stacked bar
+indicates the predicted class and the size indicates frequency amount. Common
+errors are with hand signs that involve a closed hand gesture.}
 \label{fig:errTargPred}
 \end{figure}
+The firgure indicates that the most common error is with the sign for the
+letter `E' which is confused with the letters `S', `M', and `T'. A close
+inspection of Figure \ref{fig:asl} reveals that these signs are very similar
+and these errors are not surprising. Similarly, the sign `M' was missclassified
+as `A' and `S'. Most misclassifications in Figure \ref{fig:errTargPred} are
+related to signs done when the hand is making a fist form and the differences
+in depth are low. 
 
-
+To illustrate this further, Figure \ref{fig:errors} shows a variety of
+missclassification errors. 
 \begin{figure}
 \centering
 \begin{tabular}{cccc}
-Target $\mu_c$ & Input & Similar & Predicted $\mu_c$ \\
+Input & Predicted$^*$ & Input & Predicted$^*$ \\
 
-\includegraphics[width=1cm]{img/S01_C14m_0009.eps} & 
-\includegraphics[width=1cm]{img/S01_C14_0186.eps} & 
-\includegraphics[width=1cm]{img/S01_C28_0015.eps} &  
-\includegraphics[width=1cm]{img/S01_C28m_0100.eps} \\ 
-$c=\text{E}$ & & $c=\text{T}$ \\
-\includegraphics[width=1cm]{img/S01_C22m_0035.eps} & 
-\includegraphics[width=1cm]{img/S01_C22_0139.eps} & 
-\includegraphics[width=1cm]{img/S01_C28_0142.eps} & 
-\includegraphics[width=1cm]{img/S01_C28m_0100.eps} \\ 
-$c=\text{N}$ & & $c=\text{T}$ \\
-\includegraphics[width=1cm]{img/S02_C28m_0052.eps} & 
-\includegraphics[width=1cm]{img/S02_C28_0199.eps} & 
-\includegraphics[width=1cm]{img/S02_C10_0146.eps} & 
-\includegraphics[width=1cm]{img/S02_C10m_0030.eps} \\ 
-$c=\text{T}$ & & $c=\text{A}$ \\
-\includegraphics[width=1cm]{img/S03_C10m_0181.eps} & 
-\includegraphics[width=1cm]{img/S03_C10_0138.eps} & 
-\includegraphics[width=1cm]{img/S03_C24_0055.eps} & 
-\includegraphics[width=1cm]{img/S03_C24m_0088.eps} \\ 
-$c=\text{A}$ & & $c=\text{P}$ \\
-\includegraphics[width=1cm]{img/S01_C18m_0114.eps} & 
-\includegraphics[width=1cm]{img/S01_C18_0051.eps} & 
-\includegraphics[width=1cm]{img/S01_C14_0097.eps} & 
-\includegraphics[width=1cm]{img/S01_C14m_0009.eps} \\ 
-$c=\text{I}$ & & $c=\text{E}$ \\
-\includegraphics[width=1cm]{img/S01_C21m_0001.eps} & 
-\includegraphics[width=1cm]{img/S01_C21_0058.eps} & 
-\includegraphics[width=1cm]{img/S01_C22_0123.eps} & 
-\includegraphics[width=1cm]{img/S01_C22m_0035.eps} \\ 
-$c=\text{M}$ & & $c=\text{N}$ \\
-\includegraphics[width=1cm]{img/S04_C05m_0172.eps} & 
-\includegraphics[width=1cm]{img/S04_C05_0138.eps} & 
-\includegraphics[width=1cm]{img/S04_C06_0073.eps} & 
-\includegraphics[width=1cm]{img/S04_C06m_0080.eps} \\ 
-$c=\text{5}$ & & $c=\text{6/W}$ \\
-\includegraphics[width=1cm]{img/S01_C06m_0167.eps} & 
-\includegraphics[width=1cm]{img/S01_C06_0015.eps} & 
-\includegraphics[width=1cm]{img/S01_C07_0013.eps} & 
-\includegraphics[width=1cm]{img/S01_C07m_0171.eps} \\ 
-$c=\text{6/W}$ & & $c=\text{7}$ \\
-\includegraphics[width=1cm]{img/S01_C04m_0185.eps} & 
-\includegraphics[width=1cm]{img/S01_C04_0118.eps} & 
-\includegraphics[width=1cm]{img/S01_C06_0014.eps} & 
-\includegraphics[width=1cm]{img/S01_C06m_0167.eps} \\ 
-$c=\text{4}$ & & $c=\text{6/W}$ \\
+\includegraphics[width=1.5cm]{img/S01_C14_0186.eps} & 
+\includegraphics[width=1.5cm]{img/S01_C28_0015.eps} &  
+\includegraphics[width=1.5cm]{img/S01_C22_0139.eps} & 
+\includegraphics[width=1.5cm]{img/S01_C28_0142.eps} \\ 
+$\text{E}$ & $\text{T}$ & $\text{N}$ & $\text{T}$ \\
+
+\includegraphics[width=1.5cm]{img/S02_C28_0199.eps} & 
+\includegraphics[width=1.5cm]{img/S02_C10_0146.eps} & 
+\includegraphics[width=1.5cm]{img/S03_C10_0138.eps} & 
+\includegraphics[width=1.5cm]{img/S03_C24_0055.eps} \\
+$\text{T}$ & $\text{A}$ & $\text{A}$ & $\text{P}$ \\
+
+\includegraphics[width=1.5cm]{img/S01_C04_0118.eps} & 
+\includegraphics[width=1.5cm]{img/S01_C06_0014.eps} & 
+\includegraphics[width=1.5cm]{img/S01_C21_0058.eps} & 
+\includegraphics[width=1.5cm]{img/S01_C22_0123.eps} \\
+$\text{4}$ & $\text{6/W}$ & $\text{M}$ & $\text{N}$ \\
+
+\includegraphics[width=1.5cm]{img/S04_C05_0138.eps} & 
+\includegraphics[width=1.5cm]{img/S04_C06_0073.eps} & 
+\includegraphics[width=1.5cm]{img/S01_C06_0015.eps} & 
+\includegraphics[width=1.5cm]{img/S01_C07_0013.eps} \\
+$\text{5}$ & $\text{6/W}$ & $\text{6/W}$ & $\text{7}$ \\
+
 \end{tabular}
-\caption{The American Sign Language (ASL) displaying 26 signs corresponding to the
-English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
+\caption{Examples of classification errors. $^*$The image shown as predicted is
+the nearest neighbor found in the predicted class with respect to the input.}
 \label{fig:errors}
 \end{figure}
-
-
-\begin{table}
+From the figure it can be seen that hand gestures
+with a closed fist can be consued with other similar gestures. However, a close
+inspection of other gestures suggests that errors are also caused by poor
+segmentation of the hand area. For example, consider the signs corresponding to
+numbers `4' and `6', and also letters `E', `A', and `M', the lower portion of
+the image has a section that was not segmented out of the image and it has been
+introduced as part of the input. It is possible that the network encoded this
+as a distinctive feature of the images leading to classification errors. 
+Figure \ref{fig:weights} visualizes the weights associated to each neural
+unit in the first encoding layer for the fifth subject. 
+\begin{figure}
 \centering
-\caption{Critical $N$ values}
-\begin{tabular}{ccccccc}
-\hline\noalign{\smallskip}
- & S1 & S2 & S3 & S4 & S5 & Avg. \\ \noalign{\smallskip}
-\hline
-\noalign{\smallskip}
-ACC & 0.9748 & 0.9923 & 0.9935 & 0.9929 & 0.9910 & 0.9889 \\ 
-SPC & 0.9991 & 0.9997 & 0.9998 & 0.9998 & 0.9997 & 0.9996 \\
-MAE & 0.1483 & 0.0640 & 0.0373 & 0.0347 & 0.0494 & 0.0667\\ \hline
-\end{tabular}
-\end{table}
+\includegraphics[width=12.2cm]{img/weightsS05.eps}
+\caption{Weights associated with 100 trained neurons in the first layer for the
+fifth subject.}
+\label{fig:weights}
+\end{figure}
+The weights are capturing higer-level
+features and at the same time some seem to discard inforation around the limits
+of the images, but some seem to rely on regions of the image that are
+consistent with regions where images exhibit poor segmentation. Further studies
+are required to confirm this, however.
 
+As shown in Table \ref{tbl:performance}, the overall accuracy is 98.9\%, and
+furthermore, Figure \ref{fig:errPerClass} shows the average accuracy for each
+individual sign. 
 \begin{figure}
 \centering
 \begin{tikzpicture}
@@ -595,20 +633,21 @@ MAE & 0.1483 & 0.0640 & 0.0373 & 0.0347 & 0.0494 & 0.0667\\ \hline
     {classbardata.dat};
   \end{axis}
 \end{tikzpicture}
-\caption{The American Sign Language (ASL) displaying 26 signs corresponding to the
-English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
+\caption{Average accuracy for each different sign on validation set. Most signs 
+with lower accuracy are ones whose sign involves a closed hand gesture.}
 \label{fig:errPerClass}
 \end{figure}
+From the figure it can be seen that signs that involve hand gestures are likely
+to have lower accuracy. The figure also shows that about half of the signs
+achieve perfect classification over samples that were unseen by the network
+architecture. This indicates superior generalization abilities of the proposed
+deep architecture. 
 
 
-\begin{figure}
-\centering
-\includegraphics[width=12.2cm]{img/weightsS05.eps}
-\caption{The American Sign Language (ASL) displaying 26 signs corresponding to the
-English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
-\label{fig:asl}
-\end{figure}
+\section{Conclusions}
 
+We have presented a deep learning architecture based on sparse autoencoders
+for the problem of sign recognition. 
 
 \bibliographystyle{splncs03} 
 \bibliography{ref}
