@@ -60,8 +60,8 @@
 }
 
 
-\title{A deep learning approach to sign language recognition using stacked 
-autoencoders and neural networks}
+\title{A deep learning approach to sign language recognition using stacked
+sparse autoencoders}
 \author{Pablo Rivas}
 \date{Jan/24/17}
 
@@ -69,6 +69,15 @@ autoencoders and neural networks}
 \lstset{language=Python}
 
 \maketitle
+
+\begin{abstract}
+In this paper we address the problem of hand gestures recognition in the
+American Sign Language (ASL) using deep learning. We propose a five layer model
+using unsipervised encoder-decoder layers and a softmax layer in the output. We
+use a dataset of segmented images captured with a depth-sensor camera for
+different subjects. The average accuracy obtained was of 98.9\% and as high as
+99.4\% on unseen data.
+\end{abstract}
 
 \section{Introduction}
 
@@ -147,7 +156,7 @@ depicts the gestures pertaining to our study.
 
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{img/signs.eps}
+\includegraphics[width=12.2cm]{img/signs.eps}
 \caption{The American Sign Language (ASL) displaying 26 signs corresponding to the
 English alphabet (A to Z) and 9 signs for numbers (1 to 9).}
 \label{fig:asl}
@@ -186,7 +195,7 @@ Figure \ref{fig:sampN1}.
 
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{img/sampleNum1.eps}
+\includegraphics[width=12.2cm]{img/sampleNum1.eps}
 \caption{Examples of ASL hand gestures corresponding to the number one and 
 number two with variations in
 the horizontal axis and its inclination with respect to a depth-sensor camera.}
@@ -647,7 +656,26 @@ deep architecture.
 \section{Conclusions}
 
 We have presented a deep learning architecture based on sparse autoencoders
-for the problem of sign recognition. 
+for the problem of sign recognition. The model recognizes 31 different signs in
+the American Sign Language with an average accuracy of 98.9\%. We proposed an
+architecture with 100 and 50 neural units trained in unsuppervised
+encoding-decoding steps, and a softmax network with 31 units in the output
+layer corresponding to each class. The input consists of depth-sensor images
+from five different subjects whose hand sign was segmented to preserve only the
+regions corresponding to the hand. Further inspection of classification errors
+indicates that errors are most common among signs that are similar and are amog
+the type that has a closed hand sign; other causes or missclassification come
+from poor segmentation in the original dataset. 
+
+The proposed five layer architecture captures well, in three levels of
+abstraction, the intricacies of hand gestures. However, the problem of finding 
+a minimal number of neurons withouth loss of
+generalization in each layer requires further research. The next steps,
+however, are to explore subject vs subject experiments, such as training with a
+varying number of subjects and testing with new unseen subjects whose hand
+size, shape, and musculoskeletal systems are completely unknown. 
+
+
 
 \bibliographystyle{splncs03} 
 \bibliography{ref}
